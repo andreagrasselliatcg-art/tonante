@@ -76,6 +76,7 @@ private:
 
     struct Section { juce::String title; juce::Rectangle<int> area; };
     std::vector<Section> sections;
+    juce::Image texture;
     std::vector<std::pair<juce::String, juce::Rectangle<int>>> rowLabels;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TonanteEditor)

@@ -17,11 +17,11 @@ Ableton Live: *Impostazioni → Plug-in → Use VST3 Plug-in System Folders → 
 
 | Sezione | Controlli |
 |---|---|
-| **Controllers** | Tune (±1 semitono), Glide + interruttore, Mod Mix (Osc 3 ↔ rumore), Mod Amount (si somma alla mod wheel), Osc Mod (→ pitch Osc 1/2), Filter Mod (→ cutoff), Decay (il rilascio usa il tempo di decay) |
+| **Performance** | Tune (±1 semitono), Glide + interruttore, Mod Mix (Osc 3 ↔ rumore), Mod Amount (si somma alla mod wheel), Osc Mod (→ pitch Osc 1/2), Filter Mod (→ cutoff), Decay (il rilascio usa il tempo di decay) |
 | **Oscillators** | Range LO / 32' / 16' / 8' / 4' / 2'; forme d'onda triangolo, tri-saw (Osc 3: dente di sega inverso), dente di sega, quadra, impulso largo, impulso stretto; Frequency ±7 semitoni su Osc 2/3 (in LO ±3 ottave); **KBD** sgancia Osc 3 dalla tastiera per usarlo come LFO |
 | **Mixer** | Volume e on/off di Osc 1-3, rumore bianco/rosa, **Feedback** (anello di saturazione). Volumi alti mandano in saturazione il filtro, come sugli analogici |
-| **Filter** | Cutoff, Emphasis (fino all'autoscillazione), Contour Amount, KBD 1 (1/3) e KBD 2 (2/3) di inseguimento tastiera, inviluppo Attack/Decay/Sustain |
-| **Loudness** | Attack/Decay/Sustain, Volume |
+| **Filter** | Cutoff, Resonance (fino all'autoscillazione), Env Amount, Track 1/3 e Track 2/3 (inseguimento tastiera), Filter Envelope Attack/Decay/Sustain |
+| **Amplifier** | Attack/Decay/Sustain, Volume |
 | **Settings** | Bend range, Drift (instabilità analogica), Velocity, Priority (nota bassa/ultima/alta), Trigger (single = legato, multi) |
 
 Tastiera a schermo, ruote **Pitch** (torna al centro) e **Mod**; MIDI: pitch bend, mod wheel (CC1), all notes off.

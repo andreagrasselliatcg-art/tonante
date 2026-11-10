@@ -38,7 +38,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout TonanteProcessor::createLayo
     knob ("modAmount", "Mod Amount", 0.0f, 10.0f, 0.0f);
     sw   ("oscMod", "Oscillator Modulation", false);
     sw   ("filterMod", "Filter Modulation", false);
-    sw   ("osc3Kbd", "Osc 3 Keyboard Control", true);
+    sw   ("osc3Kbd", "Osc 3 Key Follow", true);
     l.add (std::make_unique<AudioParameterInt> (ParameterID { "bendRange", 1 }, "Bend Range", 1, 12, 2));
     choice ("trigger", "Trigger", { "Single", "Multi" }, 0);
     choice ("priority", "Note Priority", { "Low", "Last", "High" }, 0);
@@ -64,18 +64,18 @@ juce::AudioProcessorValueTreeState::ParameterLayout TonanteProcessor::createLayo
     NormalisableRange<float> cut (20.0f, 20000.0f, 1.0f); cut.setSkewForCentre (800.0f);
     l.add (std::make_unique<AudioParameterFloat> (ParameterID { "cutoff", 1 }, "Cutoff", cut, 1000.0f,
                                                   AudioParameterFloatAttributes().withLabel ("Hz")));
-    knob ("emphasis", "Emphasis", 0.0f, 10.0f, 2.0f);
-    knob ("contour", "Contour Amount", 0.0f, 10.0f, 5.0f);
-    sw ("kbd1", "Keyboard Control 1", true);
-    sw ("kbd2", "Keyboard Control 2", false);
+    knob ("emphasis", "Resonance", 0.0f, 10.0f, 2.0f);
+    knob ("contour", "Envelope Amount", 0.0f, 10.0f, 5.0f);
+    sw ("kbd1", "Key Tracking 1/3", true);
+    sw ("kbd2", "Key Tracking 2/3", false);
 
     // inviluppi
     knob ("fAttack", "Filter Attack", 0.0f, 10.0f, 0.0f);
     knob ("fDecay", "Filter Decay", 0.0f, 10.0f, 4.0f);
     knob ("fSustain", "Filter Sustain", 0.0f, 10.0f, 3.0f);
-    knob ("aAttack", "Loudness Attack", 0.0f, 10.0f, 0.0f);
-    knob ("aDecay", "Loudness Decay", 0.0f, 10.0f, 4.0f);
-    knob ("aSustain", "Loudness Sustain", 0.0f, 10.0f, 10.0f);
+    knob ("aAttack", "Amp Attack", 0.0f, 10.0f, 0.0f);
+    knob ("aDecay", "Amp Decay", 0.0f, 10.0f, 4.0f);
+    knob ("aSustain", "Amp Sustain", 0.0f, 10.0f, 10.0f);
     sw ("decaySw", "Decay (Release)", false);
     knob ("volume", "Volume", 0.0f, 10.0f, 7.0f);
     return l;
