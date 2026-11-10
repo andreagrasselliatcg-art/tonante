@@ -1,0 +1,94 @@
+name: Build Tonante
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  macos:
+    runs-on: macos-15-intel   # i runner arm64 spesso non hanno capacità; il binario resta Universal
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Version
+        id: ver
+        run: echo "version=$(grep -oE 'project\(Tonante VERSION [0-9.]+' CMakeLists.txt | grep -oE '[0-9.]+$')" >> "$GITHUB_OUTPUT"
+      - name: Configure (Universal arm64 + x86_64)
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DTONANTE_TESTS=ON -DTONANTE_COPY_AFTER_BUILD=OFF
+      - name: Build
+        run: cmake --build build --config Release --target Tonante_AU Tonante_VST3 tonante_synth_test -j 4
+      - name: Synth test
+        run: ./build/tonante_synth_test
+      - name: Check Universal binary
+        run: lipo -info build/Tonante_artefacts/Release/AU/Tonante.component/Contents/MacOS/Tonante
+      - name: Validate Audio Unit (auval)
+        run: |
+          mkdir -p ~/Library/Audio/Plug-Ins/Components
+          cp -R build/Tonante_artefacts/Release/AU/Tonante.component ~/Library/Audio/Plug-Ins/Components/
+          codesign --force --deep -s - ~/Library/Audio/Plug-Ins/Components/Tonante.component
+          killall -9 AudioComponentRegistrar || true
+          sleep 2
+          auval -v aumu Tnnt TnTk | tee auval.txt
+          grep -q "AU VALIDATION SUCCEEDED" auval.txt
+      - name: Build .pkg installer
+        run: scripts/make_pkg.sh "${{ steps.ver.outputs.version }}" build/Tonante_artefacts/Release dist
+      - uses: actions/upload-artifact@v5
+        with:
+          name: mac
+          path: dist/*.pkg
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Version
+        id: ver
+        shell: bash
+        run: echo "version=$(grep -oE 'project\(Tonante VERSION [0-9.]+' CMakeLists.txt | grep -oE '[0-9.]+$')" >> "$GITHUB_OUTPUT"
+      - name: Configure
+        run: cmake -B build -DTONANTE_TESTS=ON -DTONANTE_COPY_AFTER_BUILD=OFF
+      - name: Build
+        run: cmake --build build --config Release --target Tonante_VST3 tonante_synth_test -j 4
+      - name: Synth test
+        run: build\Release\tonante_synth_test.exe
+      - name: Installer (Inno Setup)
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup -y --no-progress; }
+          & $iscc /DAppVersion=${{ steps.ver.outputs.version }} /O"$PWD\dist" scripts\win\tonante.iss
+          Compress-Archive -Path build\Tonante_artefacts\Release\VST3\Tonante.vst3 -DestinationPath dist\Tonante-${{ steps.ver.outputs.version }}-Windows-VST3.zip
+      - uses: actions/upload-artifact@v5
+        with:
+          name: windows
+          path: dist/*
+
+  release:
+    needs: [ macos, windows ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          path: dist
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.macos.outputs.version }}
+          target_commitish: ${{ github.sha }}
+          name: Tonante ${{ needs.macos.outputs.version }}
+          make_latest: true
+          files: dist/*
+          body: |
+            **macOS** (Apple Silicon + Intel): `Tonante-…-macOS.pkg` → AU per Logic Pro, VST3 per Ableton Live.
+            **Windows**: `Tonante-…-Windows-Setup.exe` (installa il VST3 in `C:\Program Files\Common Files\VST3`) oppure lo zip del VST3.
+
+            I pacchetti non sono firmati: su Mac, al primo avvio, Impostazioni di Sistema → Privacy e sicurezza → "Apri comunque"; su Windows, "Ulteriori informazioni" → "Esegui comunque".

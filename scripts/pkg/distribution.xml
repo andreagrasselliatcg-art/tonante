@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="2">
+    <title>Tonante @VERSION@</title>
+    <organization>com.tunetalks</organization>
+    <domains enable_localSystem="true"/>
+    <options customize="allow" require-scripts="false" hostArchitectures="arm64,x86_64"/>
+    <welcome file="welcome.html" mime-type="text/html"/>
+    <choices-outline>
+        <line choice="au"/>
+        <line choice="vst3"/>
+    </choices-outline>
+    <choice id="au" title="Audio Unit instrument (Logic Pro, GarageBand)"
+            description="Installa Tonante.component in /Library/Audio/Plug-Ins/Components">
+        <pkg-ref id="com.tunetalks.tonante.au"/>
+    </choice>
+    <choice id="vst3" title="VST3 (Ableton Live, Cubase, Studio One...)"
+            description="Installa Tonante.vst3 in /Library/Audio/Plug-Ins/VST3">
+        <pkg-ref id="com.tunetalks.tonante.vst3"/>
+    </choice>
+    <pkg-ref id="com.tunetalks.tonante.au" version="@VERSION@" onConclusion="none">Tonante-AU.pkg</pkg-ref>
+    <pkg-ref id="com.tunetalks.tonante.vst3" version="@VERSION@" onConclusion="none">Tonante-VST3.pkg</pkg-ref>
+</installer-gui-script>
